@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  application:
+    build: docker
+    volumes:
+      - .:/var/src/application
+      - node_modules:/var/src/application/assets/node_modules
+    working_dir: /var/src/application
+    depends_on:
+      - database
+    expose:
+      - "80"
+    entrypoint: /var/src/application/entrypoint.sh
+    environment:
+      VIRTUAL_HOST: pxblog.docker
+
+  database:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: pxblog_db
+      POSTGRES_USER: pxblog
+      POSTGRES_PASSWORD: secret
+
+volumes:
+  node_modules: {}
