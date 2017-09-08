@@ -3,13 +3,13 @@ defmodule PxblogWeb.UserControllerTest do
 
   alias Pxblog.Blog
 
-  @create_attrs %{email: "some email", password_digest: "some password_digest", username: "some username"}
-  @update_attrs %{email: "some updated email", password_digest: "some updated password_digest", username: "some updated username"}
-  @invalid_attrs %{email: nil, password_digest: nil, username: nil}
+  @create_attrs %{email: "email@example.com", username: "some username", password: "password", password_confirmation: "password"}
+  @update_attrs %{email: "another_email@example.com", username: "some updated username", password: "another_password", password_confirmation: "another_password"}
+  @invalid_attrs %{email: nil, username: nil, password: "password", password_confirmation: "another_password"}
 
   def fixture(:user) do
     {:ok, user} = Blog.create_user(@create_attrs)
-    user
+    Blog.get_user!(user.id)
   end
 
   describe "index" do
@@ -60,7 +60,7 @@ defmodule PxblogWeb.UserControllerTest do
       assert redirected_to(conn) == user_path(conn, :show, user)
 
       conn = get conn, user_path(conn, :show, user)
-      assert html_response(conn, 200) =~ "some updated email"
+      assert html_response(conn, 200) =~ "another_email@example.com"
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do

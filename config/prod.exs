@@ -21,6 +21,7 @@ config :pxblog, PxblogWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :comeonin , bcrupt_log_rounds: 14
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key

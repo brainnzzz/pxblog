@@ -12,8 +12,10 @@ config :logger, level: :warn
 # Configure your database
 config :pxblog, Pxblog.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  username: "pxblog",
+  password: "secret",
   database: "pxblog_test",
-  hostname: "localhost",
+  hostname: "database",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :comeonin , bcrupt_log_rounds: 4

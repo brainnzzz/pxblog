@@ -68,9 +68,10 @@ defmodule Pxblog.BlogTest do
   describe "users" do
     alias Pxblog.Blog.User
 
-    @valid_attrs %{email: "some email", password_digest: "some password_digest", username: "some username"}
-    @update_attrs %{email: "some updated email", password_digest: "some updated password_digest", username: "some updated username"}
-    @invalid_attrs %{email: nil, password_digest: nil, username: nil}
+    @valid_attrs %{email: "email@example.com", username: "some username", password: "secret", password_confirmation: "secret"}
+    @update_attrs %{email: "another_email@example.com", username: "some updated username", password: "another_secret", password_confirmation: "another_secret"}
+    @update_without_password_attrs %{email: "email@email.com", username: "username", password: nil, password_confirmation: nil}
+    @invalid_attrs %{email: nil, username: nil, password: "password", password_confirmation: "another_password"}
 
     def user_fixture(attrs \\ %{}) do
       {:ok, user} =
@@ -78,7 +79,7 @@ defmodule Pxblog.BlogTest do
         |> Enum.into(@valid_attrs)
         |> Blog.create_user()
 
-      user
+      Blog.get_user!(user.id)
     end
 
     test "list_users/0 returns all users" do
@@ -93,8 +94,8 @@ defmodule Pxblog.BlogTest do
 
     test "create_user/1 with valid data creates a user" do
       assert {:ok, %User{} = user} = Blog.create_user(@valid_attrs)
-      assert user.email == "some email"
-      assert user.password_digest == "some password_digest"
+      assert user.email == "email@example.com"
+      # assert user.password_digest == "some password_digest"
       assert user.username == "some username"
     end
 
@@ -106,8 +107,8 @@ defmodule Pxblog.BlogTest do
       user = user_fixture()
       assert {:ok, user} = Blog.update_user(user, @update_attrs)
       assert %User{} = user
-      assert user.email == "some updated email"
-      assert user.password_digest == "some updated password_digest"
+      assert user.email == "another_email@example.com"
+      # assert user.password_digest == "some updated password_digest"
       assert user.username == "some updated username"
     end
 
@@ -126,6 +127,16 @@ defmodule Pxblog.BlogTest do
     test "change_user/1 returns a user changeset" do
       user = user_fixture()
       assert %Ecto.Changeset{} = Blog.change_user(user)
+    end
+
+    test "password_digest value gets set to a hash" do
+      changeset = User.changeset(%User{}, @valid_attrs)
+      assert Comeonin.Bcrypt.checkpw(@valid_attrs.password, get_change(changeset, :password_digest))
+    end
+
+    test "password_digest value does not get set if password is nil" do
+      changeset = User.changeset(%User{}, @update_without_password_attrs)
+      refute get_change(changeset, :password_digest)
     end
   end
 end
